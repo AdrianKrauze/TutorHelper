@@ -1,6 +1,5 @@
-Here's the README formatted to be easily pasted into a GitHub repository:
 
-```markdown
+
 # TutorHelper API Backend
 
 The **TutorHelper API** is a backend application designed to simplify tutoring management – it handles user registration, student and lesson management, and Google Calendar synchronization. This API provides a structured solution for tutors to organize their workflow and efficiently manage lessons and student data.
