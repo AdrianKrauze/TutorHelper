@@ -51,8 +51,8 @@ The **TutorHelper API** backend provides a flexible and powerful solution for tu
 
 ### Google Calendar Integration
 
-- **`GET /api/Calendar/get-google-data`** – Retrieve Google Calendar data.
-- **`GET /api/Calendar/refresh-calendar-data`** – Refresh calendar data.
+- **`GET /api/Calendar/get-google-data`** – Retrieve Google Calendar data and cache data. 
+- **`GET /api/Calendar/refresh-calendar-data`** – Force resfresh when cache data exist in calendar data.
 
 ## Sample Requests
 
