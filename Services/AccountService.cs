@@ -47,7 +47,7 @@ namespace TutorHelper.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.FirstName),
-                // Dodaj inne roszczenia, jeśli są potrzebne
+               
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));

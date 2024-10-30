@@ -73,12 +73,12 @@ namespace TutorHelper.Services
         {
             string userId = _userContextService.GetAuthenticatedUserId;
 
-            // Pobranie studenta z pełnymi informacjami oraz liczbą lekcji w jednym zapytaniu
+           
             var student = await _tutorHelperDb.Students
          .Include(s => s.Subject)
          .Include(s => s.EduStage)
          .Include(s => s.LessonPlace)
-         .Include(s => s.Lessons) // Uwzględniamy lekcje, jeśli są potrzebne w DTO
+         .Include(s => s.Lessons) 
          .Include(s => s.StudentCondition)
          .FirstOrDefaultAsync(s => s.Id == studentId);
 
@@ -87,13 +87,13 @@ namespace TutorHelper.Services
 
             var studentDto = _mapper.Map<ViewStudentDto>(student);
 
-            // Liczenie lekcji na podstawie załadowanych danych
+          
             studentDto.CountOflessons = student.Lessons.Count;
 
             return studentDto;
         }
 
-        // Active Students Endpoints
+        
         public async Task<List<ViewStudentDtoToList>> ViewActiveStudentList()
         {
             var userId = _userContextService.GetAuthenticatedUserId;
@@ -128,7 +128,7 @@ namespace TutorHelper.Services
             return _mapper.Map<List<ViewStudentDtoToList>>(studentList);
         }
 
-        // Ended Students Endpoints
+       
         public async Task<List<ViewStudentDtoToList>> ViewEndedStudentList()
         {
             var userId = _userContextService.GetAuthenticatedUserId;
@@ -206,7 +206,7 @@ namespace TutorHelper.Services
                 .Where(s => s.StudentId == id)
                 .ToListAsync();
 
-            // Aktualizacja pól
+          
             if (!string.IsNullOrEmpty(dto.FirstName))
             {
                 student.FirstName = dto.FirstName;
@@ -244,7 +244,7 @@ namespace TutorHelper.Services
                 }
             }
 
-            // Aktualizacja relacji (np. ForeignKey)
+           
             if (!string.IsNullOrEmpty(dto.EduStageId))
             {
                 student.EduStageId = dto.EduStageId;
@@ -273,7 +273,7 @@ namespace TutorHelper.Services
             _tutorHelperDb.Lessons.UpdateRange(stundentLessonList);
             _tutorHelperDb.Lessons.UpdateRange(stundentLessonListWithDate);
 
-            // Zapis zmian do bazy
+            
             _tutorHelperDb.Students.Update(student);
             await _tutorHelperDb.SaveChangesAsync();
         }

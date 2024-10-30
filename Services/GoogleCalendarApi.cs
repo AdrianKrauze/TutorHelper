@@ -161,7 +161,7 @@ namespace TutorHelper.Services
 
         public async Task UpdateGoogleEvent(LessonWithStudent lesson)
         {
-            // Sprawdź, czy lesson ma przypisany GoogleEventId
+       
             if (string.IsNullOrEmpty(lesson.GoogleEventId))
             {
                 throw new ArgumentException("GoogleEventId is required to update the event.");
@@ -169,22 +169,21 @@ namespace TutorHelper.Services
 
             UserCredential credential = await GetUserCredential();
 
-            // Utwórz instancję usługi CalendarService
+           
             var service = new CalendarService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName
             });
 
-            // Mapuj lesson na GoogleCalendarEvent
+           
             var googleCalendarEvent = _mapper.Map<GoogleCalendarEvent>(lesson);
-            var updatedEvent = MapGoogleCalendarEventToEvent(googleCalendarEvent); // Mapowanie na Event
+            var updatedEvent = MapGoogleCalendarEventToEvent(googleCalendarEvent); 
 
             try
             {
-                // Użyj GoogleEventId do aktualizacji istniejącego wydarzenia
                 EventsResource.UpdateRequest request = service.Events.Update(updatedEvent, CalendarId, lesson.GoogleEventId);
-                await request.ExecuteAsync(); // Wykonaj żądanie aktualizacji
+                await request.ExecuteAsync(); 
             }
             catch (Google.GoogleApiException ex)
             {
@@ -198,7 +197,7 @@ namespace TutorHelper.Services
 
         public async Task UpdateGoogleEvent(Lesson lesson)
         {
-            // Sprawdź, czy lesson ma przypisany GoogleEventId
+     
             if (string.IsNullOrEmpty(lesson.GoogleEventId))
             {
                 throw new ArgumentException("GoogleEventId is required to update the event.");
@@ -206,22 +205,19 @@ namespace TutorHelper.Services
 
             UserCredential credential = await GetUserCredential();
 
-            // Utwórz instancję usługi CalendarService
             var service = new CalendarService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName
             });
 
-            // Mapuj lesson na GoogleCalendarEvent
             var googleCalendarEvent = _mapper.Map<GoogleCalendarEvent>(lesson);
-            var updatedEvent = MapGoogleCalendarEventToEvent(googleCalendarEvent); // Mapowanie na Event
+            var updatedEvent = MapGoogleCalendarEventToEvent(googleCalendarEvent); 
 
             try
             {
-                // Użyj GoogleEventId do aktualizacji istniejącego wydarzenia
                 EventsResource.UpdateRequest request = service.Events.Update(updatedEvent, CalendarId, lesson.GoogleEventId);
-                await request.ExecuteAsync(); // Wykonaj żądanie aktualizacji
+                await request.ExecuteAsync(); 
             }
             catch (Google.GoogleApiException ex)
             {
@@ -235,14 +231,14 @@ namespace TutorHelper.Services
 
         public async Task DeleteGoogleEvent(Lesson lesson)
         {
-            // Sprawdź, czy lesson ma przypisany GoogleEventId
+           
             if (string.IsNullOrEmpty(lesson.GoogleEventId))
             {
                 throw new ArgumentException("GoogleEventId is required to update the event.");
             }
             UserCredential credential = await GetUserCredential();
 
-            // Utwórz instancję usługi CalendarService
+           
             var service = new CalendarService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
@@ -254,7 +250,7 @@ namespace TutorHelper.Services
             try
             {
                 EventsResource.DeleteRequest request = service.Events.Delete(CalendarId, objectIdToDelete);
-                await request.ExecuteAsync(); // Wykonaj żądanie aktualizacji
+                await request.ExecuteAsync(); 
             }
             catch (Google.GoogleApiException ex)
             {

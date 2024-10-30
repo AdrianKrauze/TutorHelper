@@ -105,7 +105,7 @@ namespace TutorHelper.Services
             var note = await _db.Notes.FindAsync(noteId);
             DataValidationMethod.OwnershipAndNullChecker<IOwner>(student, note, userId);
 
-            return note; // Zwróć znalezioną notatkę
+            return note; 
         }
     }
 }

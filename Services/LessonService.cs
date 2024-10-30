@@ -127,7 +127,7 @@ namespace TutorHelper.Services
                 lesson.CreatedById = userId;
 
                 lesson.StudentConditionId = "5";
-                lesson.PhoneNumber = dto.PhoneNumber; // Corrected property assignment
+                lesson.PhoneNumber = dto.PhoneNumber; 
                 lesson.Price = dto.Price;
                 if (dto.ContactTips == null || dto.ContactTips.Length == 0)
                 {

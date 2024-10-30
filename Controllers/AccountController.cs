@@ -110,13 +110,13 @@ namespace TutorHelper.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = await _userManager.FindByIdAsync(userId);
 
-            // Dodatkowe sprawdzenie, czy token jest jeszcze ważny
+
             if (user.TokenExpiration < DateTime.UtcNow)
             {
                 return Unauthorized("Token has expired.");
             }
 
-            // Jeśli wszystko jest w porządku, zwróć dane
+          
             return Ok(new { Data = "This is secure data.", Time = user.TokenExpiration });
         }
         [HttpGet("confirm-email")]
