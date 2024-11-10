@@ -7,6 +7,8 @@ using TutorHelper.Models.DtoModels.ToView;
 using TutorHelper.Models.DtoModels.UpdateModels;
 using TutorHelper.Middlewares.Exceptions;
 using TutorHelper.Models;
+using TutorHelper.Entities.DbContext;
+using LtDB = LinqToDB;
 
 namespace TutorHelper.Services
 {
@@ -123,6 +125,7 @@ namespace TutorHelper.Services
                 .Where(s => s.CreatedById == userId
                     && (s.StudentConditionId == "1" || s.StudentConditionId == "3")
                      && EF.Functions.Like((s.FirstName + " " + s.LastName), $"%{searchPhrase}%"))
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<ViewStudentDtoToList>>(studentList);
@@ -140,6 +143,7 @@ namespace TutorHelper.Services
                 .Include(s => s.StudentCondition)
                 .Where(s => s.CreatedById == userId
                     && (s.StudentConditionId == "2" || s.StudentConditionId == "4"))
+                  .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<ViewStudentDtoToList>>(studentList);
@@ -158,6 +162,7 @@ namespace TutorHelper.Services
                 .Where(s => s.CreatedById == userId
                     && (s.StudentConditionId == "2" || s.StudentConditionId == "4")
                      && EF.Functions.Like((s.FirstName + " " + s.LastName), $"%{searchPhrase}%"))
+                  .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<ViewStudentDtoToList>>(studentList);
@@ -189,92 +194,111 @@ namespace TutorHelper.Services
 
              DataValidationMethod.OwnershipAndNullChecker(student, userId);
 
-            var stundentLessonListWithDate = await _tutorHelperDb.Lessons
-                .OfType<LessonWithStudent>()
-                .Include(s => s.Subject)
-                .Include(s => s.EduStage)
-                .Include(s => s.LessonPlace)
-                .Include(s => s.CreatedBy)
-                .Include(s => s.Student)
-                .Where(s => s.StudentId == id && s.Date > DateTime.Now)
-                .ToListAsync();
+            var futureLessonForStudent = await _tutorHelperDb.Lessons
+        .OfType<LessonWithStudent>()
+        .Include(s => s.Subject)
+        .Include(s => s.EduStage)
+        .Include(s => s.LessonPlace)
+        .Include(s => s.CreatedBy)
+        .Include(s => s.Student)
+        .Where(s => s.StudentId == id && s.Date > DateTime.Now)
+        .ToListAsync();
 
-            var stundentLessonList = await _tutorHelperDb.Lessons
+            var allLessonForStudent = await _tutorHelperDb.Lessons
                 .OfType<LessonWithStudent>()
                 .Include(s => s.CreatedBy)
                 .Include(s => s.Student)
                 .Where(s => s.StudentId == id)
                 .ToListAsync();
 
-          
+
             if (!string.IsNullOrEmpty(dto.FirstName))
             {
                 student.FirstName = dto.FirstName;
-                foreach (var stundentLesson in stundentLessonList)
-                {
-                    stundentLesson.StudentFirstName = dto.FirstName;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.FirstName).IsModified = true;
             }
 
             if (!string.IsNullOrEmpty(dto.LastName))
             {
                 student.LastName = dto.LastName;
-                foreach (var stundentLesson in stundentLessonList)
-                {
-                    stundentLesson.StudentLastName = dto.LastName;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.LastName).IsModified = true;
             }
 
             if (!string.IsNullOrEmpty(dto.PhoneNumber))
             {
                 student.PhoneNumber = dto.PhoneNumber;
-                foreach (var stundentLesson in stundentLessonList)
-                {
-                    stundentLesson.PhoneNumber = dto.PhoneNumber;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.PhoneNumber).IsModified = true;
             }
 
-            if (dto.PricePerHour > 0) student.PricePerHour = dto.PricePerHour;
+
+            if (dto.PricePerHour.HasValue)
+            {
+                student.PricePerHour = (float)dto.PricePerHour;
+                _tutorHelperDb.Entry(student).Property(s => s.PricePerHour).IsModified = true;
+            }
 
             if (!string.IsNullOrEmpty(dto.ContactTips))
             {
-                foreach (var stundentLessonListWithD in stundentLessonListWithDate)
-                {
-                    student.ContactTips = dto.ContactTips;
-                }
+                student.ContactTips = dto.ContactTips;
+                _tutorHelperDb.Entry(student).Property(s => s.ContactTips).IsModified = true;
             }
 
-           
             if (!string.IsNullOrEmpty(dto.EduStageId))
             {
                 student.EduStageId = dto.EduStageId;
-                foreach (var stundentLessonListWithD in stundentLessonListWithDate)
-                {
-                    stundentLessonListWithD.EduStageId = dto.EduStageId;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.EduStageId).IsModified = true;
             }
+
             if (!string.IsNullOrEmpty(dto.SubjectId))
             {
                 student.SubjectId = dto.SubjectId;
-                foreach (var stundentLessonListWithD in stundentLessonListWithDate)
-                {
-                    stundentLessonListWithD.SubjectId = dto.SubjectId;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.SubjectId).IsModified = true;
             }
+
             if (!string.IsNullOrEmpty(dto.LessonPlaceId))
             {
                 student.LessonPlaceId = dto.LessonPlaceId;
-                foreach (var stundentLessonListWithD in stundentLessonListWithDate)
-                {
-                    stundentLessonListWithD.LessonPlaceId = dto.LessonPlaceId;
-                }
+                _tutorHelperDb.Entry(student).Property(s => s.LessonPlaceId).IsModified = true;
             }
 
-            _tutorHelperDb.Lessons.UpdateRange(stundentLessonList);
-            _tutorHelperDb.Lessons.UpdateRange(stundentLessonListWithDate);
+            if (!string.IsNullOrEmpty(dto.FirstName) || !string.IsNullOrEmpty(dto.LastName) || !string.IsNullOrEmpty(dto.PhoneNumber))
+            {
+                await LtDB.LinqExtensions.UpdateAsync(
+                    _tutorHelperDb.Lessons
+                        .OfType<LessonWithStudent>()
+                        .Where(l => l.StudentId == id), 
+                    x => new LessonWithStudent
+                    {
+                        StudentFirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : x.StudentFirstName,
+                        StudentLastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : x.StudentLastName,
+                        PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : x.PhoneNumber
+                    }
+                );
+            }
 
-            
+            if (dto.PricePerHour > 0 || !string.IsNullOrEmpty(dto.ContactTips) || !string.IsNullOrEmpty(dto.EduStageId) || !string.IsNullOrEmpty(dto.SubjectId) || !string.IsNullOrEmpty(dto.LessonPlaceId))
+            {
+                await LtDB.LinqExtensions.UpdateAsync(
+                    _tutorHelperDb.Lessons
+                        .OfType<LessonWithStudent>()
+                        .Where(l => l.StudentId == id),
+                    x => new LessonWithStudent
+                    {
+                        ContactTips = !string.IsNullOrEmpty(dto.ContactTips) ? dto.ContactTips : x.ContactTips,
+                        EduStageId = !string.IsNullOrEmpty(dto.EduStageId) ? dto.EduStageId : x.EduStageId,
+                        SubjectId = !string.IsNullOrEmpty(dto.SubjectId) ? dto.SubjectId : x.SubjectId,
+                        LessonPlaceId = !string.IsNullOrEmpty(dto.LessonPlaceId) ? dto.LessonPlaceId : x.LessonPlaceId
+                    }
+                );
+            }
+
+           
+
+            _tutorHelperDb.Lessons.UpdateRange(allLessonForStudent);
+            _tutorHelperDb.Lessons.UpdateRange(futureLessonForStudent);
             _tutorHelperDb.Students.Update(student);
+
+
             await _tutorHelperDb.SaveChangesAsync();
         }
         public async Task<PageResult<LessonListByStudentIdDto>> GetLessonsByStudentId(string studentId, SearchQuery searchQuery)

@@ -30,6 +30,8 @@ namespace TutorHelper
                 .ForMember(e => e.StudentConditionName, opt => opt.MapFrom(e => e.StudentCondition.Condition));
 
             CreateMap<LessonWithStudent, LessonListByStudentIdDto>();
+
+
             CreateMap<CreateNoteDto, Note>();
 
             CreateMap<Lesson, LessonObjectDto>()

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using TutorHelper.Entities.OwnershipChecker;
 using TutorHelper.Entities.ToSeed;
 
@@ -14,7 +15,6 @@ namespace TutorHelper.Entities
         public float PricePerDrive { get; set; }
         public string ContactTips { get; set; }
 
-        // Lista lekcji przypisanych do ucznia
         public ICollection<LessonWithStudent> Lessons { get; set; } = new List<LessonWithStudent>();
 
         public ICollection<Note> Notes { get; set; } = new List<Note>();
@@ -35,5 +35,25 @@ namespace TutorHelper.Entities
 
         public string StudentConditionId { get; set; }
         public StudentCondition StudentCondition { get; set; }
+
+        public PlaceholderCourseData? PlaceholderCourseData { get; set; }
+        public string ReturnFullName()
+        {
+            return $"{FirstName} {LastName}";
+        }
     }
+
+    [Owned] 
+    public class PlaceholderCourseData
+    {
+        public DayOfWeek DayOfLesson { get; set; }
+        public DateTime DateTime { get; set; }
+
+        public float Duration { get; set; }
+    }
+
+    
+
+   
+
 }

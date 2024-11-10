@@ -4,7 +4,9 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TutorHelper;
 using TutorHelper.Entities;
+using TutorHelper.Entities.DbContext;
 using TutorHelper.Middlewares;
 using TutorHelper.Models.ConfigureClasses;
 using TutorHelper.Models.DtoModels.CreateModels;
@@ -87,6 +89,8 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = googleAuthSetting.ClientId;
     options.ClientSecret = googleAuthSetting.ClientSecret;
 });
+
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

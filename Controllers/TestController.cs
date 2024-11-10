@@ -36,6 +36,45 @@ namespace TutorHelper.Controllers
         {
             var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
             return Ok(claims);
+
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("generateUsers")]
+        public async Task<IActionResult> GenerateUsers()
+        {
+            try
+            {
+                // Wywołanie metody generującej dane
+                await _testService.UseDataGenerator();
+
+                // Zwracanie odpowiedzi po pomyślnym wykonaniu metody
+                return Ok("Users generated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Obsługa błędów i zwrócenie informacji o błędzie
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("generateUsersFLI")]
+        public async Task<IActionResult> GenerateUsersFLI()
+        {
+            try
+            {
+                // Wywołanie metody generującej dane
+                await _testService.GenerateDataForLoggedUser();
+
+                // Zwracanie odpowiedzi po pomyślnym wykonaniu metody
+                return Ok("Users generated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Obsługa błędów i zwrócenie informacji o błędzie
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

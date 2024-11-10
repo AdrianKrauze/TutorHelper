@@ -57,13 +57,13 @@ namespace TutorHelper.Validators.StudentValidator
             RuleFor(x => x.PricePerDrive)
                 .NotEmpty()
                 .InclusiveBetween(0, 100)
-                .When(x => x.LessonPlaceId == "2")
+                .When(x => x.LessonPlaceId == "1")
                 .WithMessage("Jezeli uczen na dojazd podaj cene dojazdu");
 
             RuleFor(x => x.PricePerDrive)
                .Empty()
                .InclusiveBetween(0, 100)
-               .When(x => x.LessonPlaceId != "2")
+               .When(x => x.LessonPlaceId != "1")
                .WithMessage("Nie podawaj ceny dojazdu jak to uczeń bez dojazdu");
         }
     }

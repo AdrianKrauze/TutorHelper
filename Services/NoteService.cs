@@ -3,6 +3,7 @@ using TutorHelper.Entities;
 using AutoMapper;
 using TutorHelper.Entities.OwnershipChecker;
 using Microsoft.EntityFrameworkCore;
+using TutorHelper.Entities.DbContext;
 
 namespace TutorHelper.Services
 {

@@ -5,6 +5,8 @@ using TutorHelper.Entities;
 using TutorHelper.Middlewares.Exceptions;
 using TutorHelper.Models;
 using TutorHelper.Models.DtoModels.ToView;
+using TutorHelper.Entities.DbContext;
+using TutorHelper.Models.DtoModels;
 
 namespace TutorHelper.Services
 {
@@ -28,6 +30,40 @@ namespace TutorHelper.Services
             _userContextService = userContextService;
             _mapper = mapper;
         }
+
+
+        public async Task<List<PlaceholderLesson>> GetPlaceholderData()
+        {
+            string userId = _userContextService.GetAuthenticatedUserId;
+
+            var data = await _tutorHelperDb.Students
+                .Select(x => new {x.Id, x.PlaceholderCourseData, x.FirstName, x.LastName})
+                .ToListAsync();  
+
+            var result = data.Select(x =>
+            {
+                DateTime startDate = ReturnStartOfWeekOrStartOfNextWeek(x.PlaceholderCourseData.DayOfLesson)
+                    .AddHours(x.PlaceholderCourseData.DateTime.Hour)
+                    .AddMinutes(x.PlaceholderCourseData.DateTime.Minute);
+
+                DateTime endDate = startDate.AddMinutes(x.PlaceholderCourseData.Duration);
+
+                return new PlaceholderLesson
+                {
+                    studentId = x.Id,
+                    Duration = (int)x.PlaceholderCourseData.Duration,
+                    Summary = $"Tu powinien mieć lekcje {x.FirstName} {x.LastName}",
+                    StartDate = startDate,
+                    EndDate = endDate
+                };
+            }).ToList();  // Konwertujemy na listę
+
+            return result;
+        }
+
+
+
+
 
         public async Task<Dictionary<DateTime, int>> GetLessonInMonthCount(int year, int month)
         {
@@ -111,6 +147,27 @@ namespace TutorHelper.Services
             var listToReturn = _mapper.Map<List<LessonObjectDto>>(lessons);
 
             return listToReturn;
+        }
+
+        private DateTime ReturnStartOfWeekOrStartOfNextWeek(DayOfWeek dayOfWeek)
+        {
+            DateTime today = DateTime.Today;
+            
+            DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek+(int)DayOfWeek.Monday);
+
+            int daysUntilTargetDay = (int)dayOfWeek - (int)today.DayOfWeek;
+
+            if (daysUntilTargetDay >= 0)
+            {
+                return startOfThisWeek.AddDays(daysUntilTargetDay);
+            }
+            else
+            {
+
+                return startOfThisWeek.AddDays(7+daysUntilTargetDay);
+
+
+            }
         }
        
     }

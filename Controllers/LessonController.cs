@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TutorHelper.Entities.DbContext;
 using TutorHelper.Models;
 using TutorHelper.Models.DtoModels.CreateModels;
 using TutorHelper.Models.DtoModels.ToView;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TutorHelper.Entities.DbContext;
 using TutorHelper.Models.DtoModels.Profile;
 
 namespace TutorHelper.Services

@@ -51,10 +51,16 @@ namespace TutorHelper.Validators.StudentValidator
                 .NotEqual("5")
                 .WithMessage("Nie możesz zaktualizować studenta dla jednorazowej lekcji.");
 
-            // Opcjonalnie można dodać walidację dla innych pól, jeżeli są potrzebne
+          
             RuleFor(x => x.PricePerHour)
                 .InclusiveBetween(0, 180)
                 .WithMessage("Cena za godzinę musi być większa niż 0.");
+
+            RuleFor(x => x.PricePerDrive)
+              .Empty()
+              .InclusiveBetween(0, 100)
+              .When(x => x.LessonPlaceId != "2")
+              .WithMessage("Nie podawaj ceny dojazdu jak to uczeń bez dojazdu");
         }
     }
 }

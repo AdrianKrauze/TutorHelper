@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TutorHelper.Entities;
+using TutorHelper.Entities.DbContext;
 using TutorHelper.Entities.OwnershipChecker;
 using TutorHelper.Middlewares.Exceptions;
 using TutorHelper.Models.DtoModels.CreateModels;
@@ -239,7 +240,7 @@ namespace TutorHelper.Services
 
             var groupId = lesson.LessonGroupId ?? throw new Exception("Lesson is not part of a group");
 
-            // Fetch lessons in the same group
+           
             var lessonsToUpdate = await _tutorHelperDb.Lessons
                .Where(x => x.LessonGroupId == groupId && x.Date >= lesson.Date)
                 .OrderBy(x => x.Date)
