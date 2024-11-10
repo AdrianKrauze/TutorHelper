@@ -43,9 +43,9 @@ The **TutorHelper API** backend provides a flexible and powerful solution for tu
 
 ### Lesson Management
 
-- **`POST /api/Lesson/create/with-student`** – Create a lesson linked to an existing student.
+- **`POST /api/Lesson/create/with-student`** – Create a lesson linked to an existing student. (optionally add lesson to synced google calendar)
 - **`POST /api/Lesson/create/without-student`** – Create a lesson without linking it to a student.
-- **`PATCH /api/Lesson/{lessonId}/update/with-student`** – Update a lesson associated with a student.
+- **`PATCH /api/Lesson/{lessonId}/update/with-student`** – Update a lesson associated with a student. (if lesson is synced with google calendar, update event obj in google calendar)
 - **`DELETE /api/Lesson/{lessonId}`** – Delete a lesson.
 
 ### Google Calendar Integration
