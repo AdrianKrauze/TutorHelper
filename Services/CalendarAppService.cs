@@ -7,7 +7,7 @@ using TutorHelper.Models;
 using TutorHelper.Models.DtoModels.ToView;
 using TutorHelper.Entities.DbContext;
 using TutorHelper.Models.DtoModels;
-
+using System.Linq;
 namespace TutorHelper.Services
 {
     public interface ICalendarAppService
@@ -36,27 +36,68 @@ namespace TutorHelper.Services
         {
             string userId = _userContextService.GetAuthenticatedUserId;
 
-
-            var studentCount = await _tutorHelperDb
-                .Lessons               
-                .OfType<LessonWithStudent>()
-                .Where(l => l.Date > ReturnMonday() && l.Date < ReturnMonday().AddDays(14) && l.CreatedById == userId)
-                .GroupBy(l => l.StudentId)
-                .Select(group => new
+            var listOfStudents = await _tutorHelperDb.Students
+                .Where(x => x.CreatedById == userId && x.PlaceholderCourseData != null)
+                .Select(x => new
                 {
-                    StudentId = group.Key,
-                    LessonCount = group.Count()
+                    x.Id,
+                    x.FirstName,
+                    x.LastName,
+                    x.PlaceholderCourseData
                 })
-                .Where(student => student.LessonCount < 2)
                 .ToListAsync();
 
-            var placeholdersLesson = stu
+            DateTime startOfWeek = ReturnMonday();
+            DateTime endOfWeek = startOfWeek.AddDays(7);
 
+            var placeholderLessons = new List<PlaceholderLesson>();
 
+            foreach (var student in listOfStudents)
+            {
+                // Sprawdzenie, czy uczeń ma lekcję w tym tygodniu
+                bool hasLessonThisWeek = await BoolStudentLessonInThisWeek(startOfWeek, endOfWeek, student.Id);
 
+                if (!hasLessonThisWeek)
+                {
+                    // Obliczenie daty i godziny rozpoczęcia lekcji w tym tygodniu
+                    DateTime startDateTime = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime);
+                    DateTime endDateTime = startDateTime.AddMinutes((int)student.PlaceholderCourseData.Duration);
 
+                    // Dodanie placeholdera lekcji na ten tydzień
+                    placeholderLessons.Add(new PlaceholderLesson
+                    {
+                        studentId = student.Id,
+                        Duration = (int)student.PlaceholderCourseData.Duration,
+                        Summary = $"Tu powienien mieć lekcje uczeń {student.FirstName} {student.LastName}",
+                        StartDate = startDateTime,
+                        EndDate = endDateTime
+                    });
+                }
 
+                // Sprawdzenie, czy uczeń ma lekcję w przyszłym tygodniu
+                bool hasLessonNextWeek = await BoolStudentLessonInThisWeek(startOfWeek.AddDays(7), endOfWeek.AddDays(7), student.Id);
+
+                if (!hasLessonNextWeek)
+                {
+                    // Obliczenie daty i godziny rozpoczęcia lekcji w przyszłym tygodniu
+                    DateTime startDateTimeNextWeek = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime).AddDays(7);
+                    DateTime endDateTimeNextWeek = startDateTimeNextWeek.AddMinutes((int)student.PlaceholderCourseData.Duration);
+
+                    // Dodanie placeholdera lekcji na przyszły tydzień
+                    placeholderLessons.Add(new PlaceholderLesson
+                    {
+                        studentId = student.Id,
+                        Duration = (int)student.PlaceholderCourseData.Duration,
+                        Summary = $"Tu powienien mieć lekcje uczeń {student.FirstName} {student.LastName}",
+                        StartDate = startDateTimeNextWeek,
+                        EndDate = endDateTimeNextWeek
+                    });
+                }
+            }
+
+            return placeholderLessons;
         }
+
 
 
 
@@ -167,6 +208,8 @@ namespace TutorHelper.Services
             }
         }
 
+
+        
         private DateTime ReturnMonday()
         {
             DateTime today = DateTime.Today;
@@ -176,5 +219,40 @@ namespace TutorHelper.Services
             return startOfThisWeek;
 
         }
+        private DateTime ReturnNextMonday(DateTime dateTime)
+        {
+            DateTime today = DateTime.Today;
+
+            DateTime startOfThisWeek = ReturnMonday().AddDays(7);
+
+            return startOfThisWeek;
+        }
+
+        private async Task<bool> BoolStudentLessonInThisWeek(DateTime start, DateTime end, string studentId)
+        {
+            return await _tutorHelperDb.Lessons
+                            .OfType<LessonWithStudent>()
+                            .AnyAsync(lesson => lesson.StudentId == studentId
+                                             && lesson.Date >= start
+                                             && lesson.Date <= end);
+
+
+        }
+
+        private DateTime CalculateStartDate(DayOfWeek day, TimeOnly timeSpan)
+        {
+
+            DateTime startOfWeek = ReturnMonday();
+
+
+
+            DateTime lessonDate = startOfWeek.AddDays((double)day);
+
+
+            DateTime startDateTime = lessonDate.Add(timeSpan.ToTimeSpan());
+
+            return startDateTime;
+        }
+
     }
 }

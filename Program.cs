@@ -19,9 +19,7 @@ using TutorHelper.Validators.StudentValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Konfiguracja autoryzacji
 
-// Dodawanie usług
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TutorHelperDb>(options =>
