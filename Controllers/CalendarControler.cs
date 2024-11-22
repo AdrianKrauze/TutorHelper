@@ -58,5 +58,13 @@ namespace TutorHelper.Controllers
 
             return Ok(lessons);
         }
+
+        [HttpGet]
+        [Route("lessonplaceholders")]
+        public async Task<IActionResult> GetPlaceholderLessons()
+        {
+            var result = await _calendarService.GetPlaceholderData();
+            return Ok(result);
+        }
     }
 }

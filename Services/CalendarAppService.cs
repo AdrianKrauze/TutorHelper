@@ -15,7 +15,9 @@ namespace TutorHelper.Services
         Task<Dictionary<DateTime, int>> GetLessonInMonthCount(int year, int month);
         Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day);
         Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day);
-      
+        Task<List<PlaceholderLesson>> GetPlaceholderData();
+
+
     }
 
     public class CalendarAppService : ICalendarAppService

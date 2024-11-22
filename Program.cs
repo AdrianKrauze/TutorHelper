@@ -116,6 +116,7 @@ builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ISummaryServices, SummaryServices>();
+builder.Services.AddScoped<IDataGenerator, DataGenerator>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
