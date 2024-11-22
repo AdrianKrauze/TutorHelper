@@ -36,29 +36,26 @@ namespace TutorHelper.Services
         {
             string userId = _userContextService.GetAuthenticatedUserId;
 
-            var data = await _tutorHelperDb.Students
-                .Select(x => new {x.Id, x.PlaceholderCourseData, x.FirstName, x.LastName})
-                .ToListAsync();  
 
-            var result = data.Select(x =>
-            {
-                DateTime startDate = ReturnStartOfWeekOrStartOfNextWeek(x.PlaceholderCourseData.DayOfLesson)
-                    .AddHours(x.PlaceholderCourseData.LessonTime.Hour)
-                    .AddMinutes(x.PlaceholderCourseData.LessonTime.Minute);
-
-                DateTime endDate = startDate.AddMinutes(x.PlaceholderCourseData.Duration);
-
-                return new PlaceholderLesson
+            var studentCount = await _tutorHelperDb
+                .Lessons               
+                .OfType<LessonWithStudent>()
+                .Where(l => l.Date > ReturnMonday() && l.Date < ReturnMonday().AddDays(14) && l.CreatedById == userId)
+                .GroupBy(l => l.StudentId)
+                .Select(group => new
                 {
-                    studentId = x.Id,
-                    Duration = (int)x.PlaceholderCourseData.Duration,
-                    Summary = $"Tu powinien mieć lekcje {x.FirstName} {x.LastName}",
-                    StartDate = startDate,
-                    EndDate = endDate
-                };
-            }).ToList();  // Konwertujemy na listę
+                    StudentId = group.Key,
+                    LessonCount = group.Count()
+                })
+                .Where(student => student.LessonCount < 2)
+                .ToListAsync();
 
-            return result;
+            var placeholdersLesson = stu
+
+
+
+
+
         }
 
 
@@ -152,8 +149,8 @@ namespace TutorHelper.Services
         private DateTime ReturnStartOfWeekOrStartOfNextWeek(DayOfWeek dayOfWeek)
         {
             DateTime today = DateTime.Today;
-            
-            DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek+(int)DayOfWeek.Monday);
+
+            DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
 
             int daysUntilTargetDay = (int)dayOfWeek - (int)today.DayOfWeek;
 
@@ -164,11 +161,20 @@ namespace TutorHelper.Services
             else
             {
 
-                return startOfThisWeek.AddDays(7+daysUntilTargetDay);
+                return startOfThisWeek.AddDays(7 + daysUntilTargetDay);
 
 
             }
         }
-       
+
+        private DateTime ReturnMonday()
+        {
+            DateTime today = DateTime.Today;
+
+            DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+
+            return startOfThisWeek;
+
+        }
     }
 }
