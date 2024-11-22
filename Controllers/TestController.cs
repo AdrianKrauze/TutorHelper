@@ -38,6 +38,8 @@ namespace TutorHelper.Controllers
             return Ok(claims);
 
         }
+
+
         [AllowAnonymous]
         [HttpGet]
         [Route("generateUsers")]
@@ -57,7 +59,7 @@ namespace TutorHelper.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        [AllowAnonymous]
+       
         [HttpGet]
         [Route("generateUsersFLI")]
         public async Task<IActionResult> GenerateUsersFLI()

@@ -47,7 +47,7 @@ public class DataGenerator : IDataGenerator
             .RuleFor(s => s.CreatedAt, f => f.Date.Past())
             .RuleFor(s => s.PlaceholderCourseData, f => new PlaceholderCourseData
             {
-                DateTime = f.Date.Future(),
+                LessonTime = TimeOnly.FromDateTime(f.Date.Future()),
                 DayOfLesson = f.PickRandom<DayOfWeek>(),
                 Duration = f.PickRandom(new[] { 60f, 90f })
             });
@@ -77,21 +77,7 @@ public class DataGenerator : IDataGenerator
                 .FirstOrDefaultAsync(s => s.Id == studentId);
 
             // Generator dla obiektu LessonWithStudent
-            var lessonGenerator = new Faker<LessonWithStudent>("pl")
-                .RuleFor(l => l.StudentId, f => student.Id)
-                .RuleFor(l => l.CreatedById, f => userId)
-                .RuleFor(l => l.EduStageId, f => student.EduStageId)
-                .RuleFor(l => l.SubjectId, f => student.SubjectId)
-                .RuleFor(l => l.LessonPlaceId, f => student.LessonPlaceId)
-                .RuleFor(l => l.StudentConditionId, f => student.StudentConditionId)
-                .RuleFor(l => l.ContactTips, f => student.ContactTips)
-                .RuleFor(l => l.StudentFirstName, f => student.FirstName)
-                .RuleFor(l => l.StudentLastName, f => student.LastName)
-                .RuleFor(l => l.HasStudent, f => true)
-                .RuleFor(l => l.PhoneNumber, f => student.PhoneNumber)
-                .RuleFor(l => l.Date, f => f.Date.Future())
-                .RuleFor(l => l.Duration, f => f.Random.Int(15, 180))
-                .RuleFor(l => l.Price, f => f.Random.Float(10, 300));
+            var lessonGenerator = CreateLessonWithStudentFaker(locale, student,userId);
 
             // Generowanie 10 lekcji dla każdego studenta i dodanie ich do listy
             lessonListToDb.AddRange(lessonGenerator.Generate(10));
@@ -135,7 +121,7 @@ public class DataGenerator : IDataGenerator
             .RuleFor(s => s.CreatedAt, f => f.Date.Past()) // Set CreatedAt to a past date
             .RuleFor(s => s.PlaceholderCourseData, f => new PlaceholderCourseData
             {
-                DateTime = f.Date.Future(),
+                LessonTime = TimeOnly.FromDateTime(f.Date.Future()),
                 DayOfLesson = f.PickRandom<DayOfWeek>(),
                 Duration = f.PickRandom(new[] { 60f, 90f })
             });
@@ -160,21 +146,7 @@ public class DataGenerator : IDataGenerator
 
 
 
-            var lessonGenerator = new Faker<LessonWithStudent>("pl")
-                .RuleFor(l => l.StudentId, f => studentId)
-                .RuleFor(l => l.CreatedById, f => student.CreatedById)
-                .RuleFor(l => l.EduStageId, f => student.EduStageId)
-                .RuleFor(l => l.SubjectId, f => student.SubjectId)
-                .RuleFor(l => l.LessonPlaceId, f => student.LessonPlaceId)
-                .RuleFor(l => l.StudentConditionId, f => student.StudentConditionId)
-                .RuleFor(l => l.ContactTips, f => student.ContactTips)
-                .RuleFor(l => l.StudentFirstName, f => student.FirstName)
-                .RuleFor(l => l.StudentLastName, f => student.LastName)
-                .RuleFor(l => l.HasStudent, f => true)
-                .RuleFor(l => l.PhoneNumber, f => student.PhoneNumber)
-                .RuleFor(l => l.Date, f => f.Date.Future())
-                .RuleFor(l => l.Duration, f => f.Random.Int(15, 180))
-                .RuleFor(l => l.Price, f => f.Random.Float(10, 300));
+            var lessonGenerator = CreateLessonWithStudentFaker(locale, student);
 
             lessonListToDb.AddRange(lessonGenerator.Generate(10));
 
@@ -182,5 +154,26 @@ public class DataGenerator : IDataGenerator
         await _dbContext.Lessons.AddRangeAsync(lessonListToDb);
         await _dbContext.SaveChangesAsync();
     }
+
+    private Faker<LessonWithStudent> CreateLessonWithStudentFaker(string locale, Student student, string? userId = null)
+    {
+        return new Faker<LessonWithStudent>(locale)
+            .RuleFor(l => l.StudentId, f => student.Id)
+            .RuleFor(l => l.CreatedById, f => userId ?? student.CreatedById) // Use provided userId or student's CreatedById
+            .RuleFor(l => l.EduStageId, f => student.EduStageId)
+            .RuleFor(l => l.SubjectId, f => student.SubjectId)
+            .RuleFor(l => l.LessonPlaceId, f => student.LessonPlaceId)
+            .RuleFor(l => l.StudentConditionId, f => student.StudentConditionId)
+            .RuleFor(l => l.ContactTips, f => student.ContactTips)
+            .RuleFor(l => l.StudentFirstName, f => student.FirstName)
+            .RuleFor(l => l.StudentLastName, f => student.LastName)
+            .RuleFor(l => l.HasStudent, f => true)
+            .RuleFor(l => l.PhoneNumber, f => student.PhoneNumber)
+            .RuleFor(l => l.Date, (f, s) =>
+                s.StudentConditionId == "1" || s.StudentConditionId == "3" ? f.Date.Future() : f.Date.Past())
+            .RuleFor(l => l.Duration, f => f.Random.Int(15, 180))
+            .RuleFor(l => l.Price, f => f.Random.Float(10, 300));
+    }
+
 }
 

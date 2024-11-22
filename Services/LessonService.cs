@@ -51,6 +51,7 @@ namespace TutorHelper.Services
             _googleCalendarApi = googleCalendarApi;
         }
 
+        #region create lessons
         public async Task CreateLessonWithStudentAsync(CreateLessonDtoWithStudent dto, bool addToGoogle)
         {
             string userId = _userContextService.GetAuthenticatedUserId;
@@ -154,7 +155,8 @@ namespace TutorHelper.Services
             }
             await SaveLessonToDbAndCalendar(listToAdd, addToGoogle);
         }
-        //==========================SingleLessonUpdate===========================
+        #endregion
+        #region update lessons solo
         public async Task UpdateLessonWithoutStudentAsync(string lessonId, UpdateLessonWithoutStudentDto dto)
         {
             var lesson = await _tutorHelperDb.Lessons.FindAsync(lessonId);
@@ -193,7 +195,9 @@ namespace TutorHelper.Services
             await _tutorHelperDb.SaveChangesAsync();
             await _googleCalendarApi.UpdateGoogleEvent(lesson);
         }
-        //==========================UpdateGroupMethods===========================
+        #endregion
+        #region update group
+       
         public async Task UpdateLessonWithStudentGroupAsync(string lessonId, UpdateLessonWithStudentDto dto)
         {
             string userId = _userContextService.GetAuthenticatedUserId;
@@ -264,7 +268,8 @@ namespace TutorHelper.Services
 
             await _tutorHelperDb.SaveChangesAsync();
         }
-        //=========================================DeleteLessons=======================================================
+        #endregion
+        #region delete lesson
         public async Task DeleteLesson(string lessonId)
         {
             string userId = _userContextService.GetAuthenticatedUserId;
@@ -303,7 +308,8 @@ namespace TutorHelper.Services
                 }
             }
         }
-        //==================================================PrivateMethods=============================================================
+        #endregion
+        #region private methods
         private async Task UpdatePropertiesWithStudent(LessonWithStudent lesson, UpdateLessonWithStudentDto dto)
         {
             var student = await _tutorHelperDb.Students.FindAsync(lesson.StudentId);
@@ -514,5 +520,6 @@ namespace TutorHelper.Services
         {
             _googleCalendarApi.DeleteGoogleEvent(lesson);
         }
+        #endregion
     }
 }

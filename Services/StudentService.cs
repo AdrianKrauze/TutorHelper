@@ -95,7 +95,7 @@ namespace TutorHelper.Services
             return studentDto;
         }
 
-        
+        #region WidokiStudentow  
         public async Task<List<ViewStudentDtoToList>> ViewActiveStudentList()
         {
             var userId = _userContextService.GetAuthenticatedUserId;
@@ -167,6 +167,7 @@ namespace TutorHelper.Services
 
             return _mapper.Map<List<ViewStudentDtoToList>>(studentList);
         }
+        #endregion
 
         public async Task DeleteStudentAsync(string studentId)
         {
@@ -328,5 +329,6 @@ namespace TutorHelper.Services
 
             return new PageResult<LessonListByStudentIdDto>(lessonsListDto, totalItemsCount, searchQuery.PageSize, searchQuery.PageNumber);
         }
+
     }
 }

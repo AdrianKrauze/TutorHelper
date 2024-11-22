@@ -41,13 +41,15 @@ namespace TutorHelper.Entities
         {
             return $"{FirstName} {LastName}";
         }
+
+      
     }
 
     [Owned] 
     public class PlaceholderCourseData
     {
         public DayOfWeek DayOfLesson { get; set; }
-        public DateTime DateTime { get; set; }
+        public TimeOnly LessonTime { get; set; }
 
         public float Duration { get; set; }
     }

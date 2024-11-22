@@ -43,8 +43,8 @@ namespace TutorHelper.Services
             var result = data.Select(x =>
             {
                 DateTime startDate = ReturnStartOfWeekOrStartOfNextWeek(x.PlaceholderCourseData.DayOfLesson)
-                    .AddHours(x.PlaceholderCourseData.DateTime.Hour)
-                    .AddMinutes(x.PlaceholderCourseData.DateTime.Minute);
+                    .AddHours(x.PlaceholderCourseData.LessonTime.Hour)
+                    .AddMinutes(x.PlaceholderCourseData.LessonTime.Minute);
 
                 DateTime endDate = startDate.AddMinutes(x.PlaceholderCourseData.Duration);
 
