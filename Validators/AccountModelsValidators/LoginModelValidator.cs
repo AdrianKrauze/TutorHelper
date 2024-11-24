@@ -20,8 +20,6 @@ namespace TutorHelper.Validators.AccountModelsValidators
                 .Matches("[0-9]").WithMessage("Hasło musi zawierać przynajmniej jedną cyfrę.")
                 .Matches("[^a-zA-Z0-9]").WithMessage("Hasło musi zawierać przynajmniej jeden znak specjalny.");
 
-            RuleFor(x => x.RememberMe)
-                .NotNull(); // Prawda lub fałsz, nie jest wymagana dodatkowa walidacja
         }
     }
 }

@@ -17,7 +17,7 @@ namespace TutorHelper.Services
         Task<IdentityResult> DeleteUserAsync();
         Task<IdentityResult> ForgotPasswordAsync(ForgotPasswordModel model);
         Task<string> GenerateJwtTokenAsync(User user);
-        Task<string> RefreshAccessTokenAsync(string userId);
+        Task<string> RefreshAccessTokenAsync();
         Task<IdentityResult> RegisterAsync(RegisterModel model);
         Task<IdentityResult> ResetPasswordAsync(ResetPasswordModel model);
         Task<string> SignInAsync(LoginModel model);
@@ -65,8 +65,9 @@ namespace TutorHelper.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public async Task<string> RefreshAccessTokenAsync(string userId)
+        public async Task<string> RefreshAccessTokenAsync()
         {
+           string userId = _userContextService.GetAuthenticatedUserId;
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.TokenExpiration <= DateTime.UtcNow)
             {

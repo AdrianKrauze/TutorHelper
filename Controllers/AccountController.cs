@@ -68,6 +68,7 @@ namespace TutorHelper.Controllers
         public async Task<IActionResult> Logout()
         {
             await _accountService.SignOutAsync();
+            Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "Logged out successfully." });
         }
 
@@ -146,6 +147,15 @@ namespace TutorHelper.Controllers
             return BadRequest();
         }
 
+        [Authorize]
+        [HttpPost("generate-refresh-token")]
+        public async Task<IActionResult> GenerateRefreshToken()
+        {
+
+            var token = _accountService.RefreshAccessTokenAsync();
+            return Ok(token);
+
+        }
         
     }
 }
