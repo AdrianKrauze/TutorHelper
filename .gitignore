@@ -364,7 +364,4 @@ FodyWeavers.xsd
 
 Files/Tokens/
 
-
-appsettings.json
-appsettings.Development.json
 Migrations

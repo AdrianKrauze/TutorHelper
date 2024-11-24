@@ -173,6 +173,7 @@ public class DataGenerator : IDataGenerator
                 s.StudentConditionId == "1" || s.StudentConditionId == "3" ? f.Date.Future() : f.Date.Past())
             .RuleFor(l => l.Duration, f => f.Random.Int(15, 180))
             .RuleFor(l => l.Price, f => f.Random.Float(10, 300));
+            
     }
 
 }

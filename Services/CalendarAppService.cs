@@ -189,27 +189,6 @@ namespace TutorHelper.Services
             return listToReturn;
         }
 
-        private DateTime ReturnStartOfWeekOrStartOfNextWeek(DayOfWeek dayOfWeek)
-        {
-            DateTime today = DateTime.Today;
-
-            DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
-
-            int daysUntilTargetDay = (int)dayOfWeek - (int)today.DayOfWeek;
-
-            if (daysUntilTargetDay >= 0)
-            {
-                return startOfThisWeek.AddDays(daysUntilTargetDay);
-            }
-            else
-            {
-
-                return startOfThisWeek.AddDays(7 + daysUntilTargetDay);
-
-
-            }
-        }
-
 
         
         private DateTime ReturnMonday()
