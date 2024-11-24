@@ -17,6 +17,7 @@ namespace TutorHelper.Controllers
         private readonly IAccountService _accountService;
         private readonly UserManager<User> _userManager;
 
+
         public AccountController(IAccountService accountService, UserManager<User> userManager)
         {
             _accountService = accountService;
@@ -120,10 +121,10 @@ namespace TutorHelper.Controllers
             return Ok(new { Data = "This is secure data.", Time = user.TokenExpiration });
         }
         [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
-            var decodedCode = WebUtility.UrlDecode(code);
-            decodedCode = decodedCode.Replace(" ", "+");
+            var decodedCode = WebUtility.UrlDecode(token);
+           decodedCode = decodedCode.Replace(" ", "+");
             var result = await _accountService.ConfirmEmailAsync(userId, decodedCode);
 
             if (result.Succeeded)

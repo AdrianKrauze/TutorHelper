@@ -59,6 +59,15 @@ namespace TutorHelper.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("googledata")]
+        public IActionResult GetGoogleData()
+        {
+            string result = _testService.ReturnGoogleData();
+            return Ok(result);
+        }
+        
        
         [HttpGet]
         [Route("generateUsersFLI")]

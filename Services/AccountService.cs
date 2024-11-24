@@ -152,9 +152,6 @@ namespace TutorHelper.Services
             return await _userManager.ResetPasswordAsync(user, model.Code, model.NewPassword);
         }
 
-        
-        
-
 
         public async Task<IdentityResult> RegisterAsync(RegisterModel model)
         {
@@ -163,7 +160,7 @@ namespace TutorHelper.Services
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var confirmationLink = $"https://yourdomain.com/confirm-email?userId={user.Id}&token={token}";
+                var confirmationLink = $"https://localhost:44353/api/Account/confirm-email?userId={user.Id}&token={token}";
                 await _emailSender.SendEmailAsync(model.Email, "Confirm your email", $"Please confirm your email by clicking here: {confirmationLink}");
             }
 

@@ -32,7 +32,10 @@ The **TutorHelper API** backend provides a flexible and powerful solution for tu
 - **`POST /api/Account/change-password`** – Change the current user password.
 - **`POST /api/Account/forgot-password`** – Request password reset instructions.
 - **`POST /api/Account/reset-password`** – Reset user password.
-- **`GET /api/Account/confirm-email`** – Confirm user email with a unique code.
+- **`GET /api/Account/confirm-email`** – Confirm user email with a unique 
+- 
+- 
+- .
 
 ### Student Management
 

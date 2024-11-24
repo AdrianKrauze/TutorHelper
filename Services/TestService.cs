@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TutorHelper.Entities.DbContext;
+using TutorHelper.Models.ConfigureClasses;
 
 namespace TutorHelper.Services
 {
@@ -8,6 +9,7 @@ namespace TutorHelper.Services
         Task GenerateDataForLoggedUser();
         string returnLoggedId();
         Task UseDataGenerator();
+        string ReturnGoogleData();
     }
 
     public class TestService : ITestService
@@ -17,14 +19,16 @@ namespace TutorHelper.Services
         private readonly IMapper _mapper;
         private readonly IAccountService _accountService;
         private readonly IDataGenerator _dataGenerator;
+        private readonly GoogleAuthSettings _googleAuthSettings;
 
-        public TestService(IUserContextService userContextSerivce, TutorHelperDb tutorHelperDb, IMapper mapper, IAccountService accountService, IDataGenerator dataGenerator)
+        public TestService(IUserContextService userContextSerivce, TutorHelperDb tutorHelperDb, IMapper mapper, IAccountService accountService, IDataGenerator dataGenerator, GoogleAuthSettings googleAuthSettings)
         {
             _ucs = userContextSerivce;
             _tutorHelperDb = tutorHelperDb;
             _mapper = mapper;
             _accountService = accountService;
             _dataGenerator = dataGenerator;
+            _googleAuthSettings = googleAuthSettings;
         }
 
         public string returnLoggedId()
@@ -42,6 +46,11 @@ namespace TutorHelper.Services
         public async Task GenerateDataForLoggedUser()
         {
             await _dataGenerator.GenerateStudentAndLessonForLoggedUser();
+        }
+        
+        public string ReturnGoogleData()
+        {
+            return $"{_googleAuthSettings.ClientId} /// {_googleAuthSettings.ClientSecret}";
         }
     }
 }

@@ -18,6 +18,7 @@ using TutorHelper.Validators.StudentValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,7 +48,7 @@ builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
 builder.Services.AddSingleton(authenticationSettings);
 
 var googleAuthSetting = new GoogleAuthSettings();
-builder.Configuration.GetSection("Authentication:Google").Bind(googleAuthSetting);
+builder.Configuration.GetSection("Google").Bind(googleAuthSetting);
 builder.Services.AddSingleton(googleAuthSetting);
 
 builder.Services.AddCors(options =>
