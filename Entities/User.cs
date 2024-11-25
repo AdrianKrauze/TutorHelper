@@ -13,6 +13,6 @@ namespace TutorHelper.Entities
         public List<Note> Notes { get; set; } = new List<Note>();
 
         public ICollection<UserSubTaught> UserSubTaughts { get; set; } = new HashSet<UserSubTaught>();
-        public DateTime? TokenExpiration { get; set; } // Data wygaśnięcia tokenu
+        
     }
 }
