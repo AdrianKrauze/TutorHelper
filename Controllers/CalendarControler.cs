@@ -33,15 +33,6 @@ namespace TutorHelper.Controllers
         }
 
         [HttpGet]
-        [Route("month/{year}/{month}")]
-        public async Task<IActionResult> GetLessonInMonth([FromRoute] int year, [FromRoute] int month)
-        {
-            var result = await _calendarService.GetLessonInMonthCount(year, month);
-
-            return Ok(result);
-        }
-
-        [HttpGet]
         [Route("month/{year}/{month}/{day}")]
         public async Task<IActionResult> GetLessonInDay([FromRoute] int year, [FromRoute] int month, [FromRoute] int day)
         {

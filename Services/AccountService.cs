@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TutorHelper.Entities;
@@ -17,7 +16,6 @@ namespace TutorHelper.Services
         Task<IdentityResult> DeleteUserAsync();
         Task<IdentityResult> ForgotPasswordAsync(ForgotPasswordModel model);
         Task<string> GenerateJwtTokenAsync(User user);
-        Task<string> RefreshAccessTokenAsync();
         Task<IdentityResult> RegisterAsync(RegisterModel model);
         Task<IdentityResult> ResetPasswordAsync(ResetPasswordModel model);
         Task<string> SignInAsync(LoginModel model);
@@ -47,7 +45,6 @@ namespace TutorHelper.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.FirstName),
-               
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
@@ -63,34 +60,6 @@ namespace TutorHelper.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
-        }
-
-        public async Task<string> RefreshAccessTokenAsync()
-        {
-           string userId = _userContextService.GetAuthenticatedUserId;
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.TokenExpiration <= DateTime.UtcNow)
-            {
-                throw new Exception("Refresh token expired.");
-            }
-
-            string newAccessToken = await GenerateJwtTokenAsync(user);
-            string newRefreshToken = GenerateRefreshToken();
-            user.TokenExpiration = DateTime.UtcNow.AddDays(_authenticationSettings.RefreshTokenExpireDays);
-            await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", newRefreshToken);
-            await _userManager.UpdateAsync(user);
-
-            return newAccessToken;
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomBytes = new byte[32];
-            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(randomBytes);
-                return Convert.ToBase64String(randomBytes);
-            }
         }
 
         public async Task<string> SignInAsync(LoginModel model)
@@ -152,7 +121,6 @@ namespace TutorHelper.Services
 
             return await _userManager.ResetPasswordAsync(user, model.Code, model.NewPassword);
         }
-
 
         public async Task<IdentityResult> RegisterAsync(RegisterModel model)
         {

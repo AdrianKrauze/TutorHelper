@@ -12,7 +12,7 @@ namespace TutorHelper.Services
 {
     public interface ICalendarAppService
     {
-        Task<Dictionary<DateTime, int>> GetLessonInMonthCount(int year, int month);
+        
         Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day);
         Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day);
         Task<List<PlaceholderLesson>> GetPlaceholderData();
@@ -56,16 +56,16 @@ namespace TutorHelper.Services
 
             foreach (var student in listOfStudents)
             {
-                // Sprawdzenie, czy uczeń ma lekcję w tym tygodniu
+              
                 bool hasLessonThisWeek = await BoolStudentLessonInThisWeek(startOfWeek, endOfWeek, student.Id);
 
                 if (!hasLessonThisWeek)
                 {
-                    // Obliczenie daty i godziny rozpoczęcia lekcji w tym tygodniu
+                   
                     DateTime startDateTime = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime);
                     DateTime endDateTime = startDateTime.AddMinutes((int)student.PlaceholderCourseData.Duration);
 
-                    // Dodanie placeholdera lekcji na ten tydzień
+                    
                     placeholderLessons.Add(new PlaceholderLesson
                     {
                         studentId = student.Id,
@@ -76,16 +76,16 @@ namespace TutorHelper.Services
                     });
                 }
 
-                // Sprawdzenie, czy uczeń ma lekcję w przyszłym tygodniu
+             
                 bool hasLessonNextWeek = await BoolStudentLessonInThisWeek(startOfWeek.AddDays(7), endOfWeek.AddDays(7), student.Id);
 
                 if (!hasLessonNextWeek)
                 {
-                    // Obliczenie daty i godziny rozpoczęcia lekcji w przyszłym tygodniu
+                  
                     DateTime startDateTimeNextWeek = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime).AddDays(7);
                     DateTime endDateTimeNextWeek = startDateTimeNextWeek.AddMinutes((int)student.PlaceholderCourseData.Duration);
 
-                    // Dodanie placeholdera lekcji na przyszły tydzień
+                 
                     placeholderLessons.Add(new PlaceholderLesson
                     {
                         studentId = student.Id,
@@ -105,30 +105,10 @@ namespace TutorHelper.Services
 
 
 
-        public async Task<Dictionary<DateTime, int>> GetLessonInMonthCount(int year, int month)
-        {
-            string userId = _userContextService.GetAuthenticatedUserId;
-
-            // Walidacja roku i miesiąca
-            if (year < 1900 || year > DateTime.Now.Year || month < 1 || month > 12)
-            {
-                throw new BadRequestException("The provided date parameters are not valid.");
-            }
-
-            var query = await _tutorHelperDb.Lessons
-                .Where(l => l.CreatedById == userId && l.Date.Year == year && l.Date.Month == month)
-                .ToListAsync();
-
-            var lessonsGroupedByDay = query
-                .GroupBy(l => l.Date.Date)
-                .ToDictionary(g => g.Key, g => g.Count());
-
-            return lessonsGroupedByDay;
-        }
 
         public async Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day)
         {
-            // Walidacja daty
+           
             if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
             {
                 throw new BadRequestException("The provided date parameters are not valid.");
@@ -138,7 +118,6 @@ namespace TutorHelper.Services
 
             var date = new DateTime(year, month, day, 0, 0, 0);
 
-            // Pobranie lekcji z danego dnia
             var lessonsListInDay = await _tutorHelperDb.Lessons
                 .Where(l => l.CreatedById == userId && l.Date.Year == year && l.Date.Month == month && l.Date.Day == day)
                 .Include(x => x.EduStage)
@@ -148,10 +127,9 @@ namespace TutorHelper.Services
                 .ToListAsync();
 
 
-            // Sortowanie lekcji, np. z flagą HasStudent, jeśli to potrzebne
             var sortedLessons = lessonsListInDay.OrderBy(x => x.HasStudent).ThenBy(x => x.Date).ToList();
 
-            // Mapowanie list na DTO
+           
             var mappedList = _mapper.Map<List<LessonObjectDto>>(sortedLessons);
 
             return mappedList;
@@ -159,7 +137,7 @@ namespace TutorHelper.Services
 
         public async Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day)
         {
-            // Validate year, month, and day to ensure they form a valid date
+            
             if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
             {
                 throw new BadRequestException("The provided date parameters are not valid.");

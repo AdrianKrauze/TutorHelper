@@ -45,13 +45,13 @@ namespace TutorHelper.Controllers
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
             {
-                return Unauthorized("Invalid login attempt. Email Dto");
+                return Unauthorized("Invalid login attempt.");
             }
 
             var passwordCheck = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!passwordCheck)
             {
-                return Unauthorized("Invalid login attempt. Password");
+                return Unauthorized("Invalid login attempt");
             }
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
@@ -68,7 +68,6 @@ namespace TutorHelper.Controllers
         public async Task<IActionResult> Logout()
         {
             await _accountService.SignOutAsync();
-            Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "Logged out successfully." });
         }
 
@@ -105,22 +104,7 @@ namespace TutorHelper.Controllers
 
             return BadRequest(result.Errors);
         }
-        [Authorize]
-        [HttpGet("secure-data")]
-        public async Task<IActionResult> GetSecureData()
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(userId);
-
-
-            if (user.TokenExpiration < DateTime.UtcNow)
-            {
-                return Unauthorized("Token has expired.");
-            }
-
-          
-            return Ok(new { Data = "This is secure data.", Time = user.TokenExpiration });
-        }
+        
         [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
@@ -147,15 +131,6 @@ namespace TutorHelper.Controllers
             return BadRequest();
         }
 
-        [Authorize]
-        [HttpPost("generate-refresh-token")]
-        public async Task<IActionResult> GenerateRefreshToken()
-        {
-
-            var token = _accountService.RefreshAccessTokenAsync();
-            return Ok(token);
-
-        }
         
     }
 }

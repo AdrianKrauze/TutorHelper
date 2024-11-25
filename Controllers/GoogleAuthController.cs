@@ -34,7 +34,7 @@ public class GoogleAuthController : ControllerBase
 
         var jwtToken = await _googleAuthService.AuthenticateGoogleUserAsync(loginInfo);
 
-        // Możesz zwrócić token JWT do klienta lub przekierować użytkownika
+       
         return Ok(new { Token = jwtToken });
     }
 }
