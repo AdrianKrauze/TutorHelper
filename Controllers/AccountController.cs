@@ -60,7 +60,7 @@ namespace TutorHelper.Controllers
             }
 
             var token = await _accountService.GenerateJwtTokenAsync(user);
-            return Ok(new { Token = token });
+            return Ok(token);
         }
         
 

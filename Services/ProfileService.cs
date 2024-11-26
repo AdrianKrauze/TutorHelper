@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TutorHelper.Entities.DbContext;
 using TutorHelper.Models.DtoModels.Profile;
+using TutorHelper.Models.DtoModels.ToView;
 
 namespace TutorHelper.Services
 {
@@ -10,17 +12,21 @@ namespace TutorHelper.Services
         Task DeleteUserSubjectsAsync();
         Task<string> GetEmailStateAsync();
         Task<List<UserSubTaughtDto>> GetUserSubTaughtByUserIdAsync();
+
+        Task<ViewProfileData> GetProfileDataAsync();
     }
 
     public class ProfileService : IProfileService
     {
         private readonly TutorHelperDb _db;
         private readonly IUserContextService _ucr;
+        private readonly IMapper _mapper;
 
-        public ProfileService(TutorHelperDb db, IUserContextService userContextService)
+        public ProfileService(TutorHelperDb db, IUserContextService userContextService, IMapper mapper)
         {
             _db = db;
             _ucr = userContextService;
+            _mapper = mapper;
         }
 
         public async Task UpdateTeacherSubjectsAsync(List<string> subjectIds)
@@ -98,12 +104,19 @@ namespace TutorHelper.Services
                 })
                 .ToListAsync();
 
-            if (subjects == null || !subjects.Any())
-            {
-                throw new KeyNotFoundException("No subjects found for the user.");
-            }
+            
 
             return subjects;
+        }
+
+        public async Task<ViewProfileData> GetProfileDataAsync()
+        {
+            string userId = _ucr.GetAuthenticatedUserId;
+
+            var user = await _db.Users.Where(x => x.Id == userId).FirstOrDefaultAsync();
+
+            var result = _mapper.Map<ViewProfileData>(user);
+            return result;
         }
     }
 }

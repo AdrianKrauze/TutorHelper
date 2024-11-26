@@ -17,7 +17,7 @@ public class EmailSender : IEmailSender
         _smtpSettings = smtpSettings.Value;
     }
 
-    public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+    public async Task SendEmailAsync(string recipientEmail, string subject, string htmlMessage)
     {
         var mailMessage = new MailMessage
         {
@@ -26,7 +26,7 @@ public class EmailSender : IEmailSender
             Body = htmlMessage,
             IsBodyHtml = true
         };
-        mailMessage.To.Add(email);
+        mailMessage.To.Add(recipientEmail);
 
         using (var smtpClient = new SmtpClient(_smtpSettings.Server, _smtpSettings.Port))
         {

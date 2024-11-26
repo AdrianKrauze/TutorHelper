@@ -10,6 +10,7 @@ namespace TutorHelper.Services
         string returnLoggedId();
         Task UseDataGenerator();
         string ReturnGoogleData();
+        string ReturnDevData();
     }
 
     public class TestService : ITestService
@@ -20,8 +21,9 @@ namespace TutorHelper.Services
         private readonly IAccountService _accountService;
         private readonly IDataGenerator _dataGenerator;
         private readonly GoogleAuthSettings _googleAuthSettings;
+        private readonly DeveloperInfo _developerInfo;
 
-        public TestService(IUserContextService userContextSerivce, TutorHelperDb tutorHelperDb, IMapper mapper, IAccountService accountService, IDataGenerator dataGenerator, GoogleAuthSettings googleAuthSettings)
+        public TestService(IUserContextService userContextSerivce, TutorHelperDb tutorHelperDb, IMapper mapper, IAccountService accountService, IDataGenerator dataGenerator, GoogleAuthSettings googleAuthSettings, DeveloperInfo developerInfo)
         {
             _ucs = userContextSerivce;
             _tutorHelperDb = tutorHelperDb;
@@ -29,6 +31,7 @@ namespace TutorHelper.Services
             _accountService = accountService;
             _dataGenerator = dataGenerator;
             _googleAuthSettings = googleAuthSettings;
+            _developerInfo = developerInfo;
         }
 
         public string returnLoggedId()
@@ -51,6 +54,11 @@ namespace TutorHelper.Services
         public string ReturnGoogleData()
         {
             return $"{_googleAuthSettings.ClientId} /// {_googleAuthSettings.ClientSecret}";
+        }
+
+        public string ReturnDevData()
+        {
+            return $"{_developerInfo.Email}";
         }
     }
 }

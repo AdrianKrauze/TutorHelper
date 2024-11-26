@@ -63,6 +63,8 @@ namespace TutorHelper
            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => "Zajęte w kalendarzu google"))
            .ForMember(dest => dest.StartDateTime, opt => opt.MapFrom(src => src.Start.DateTime.HasValue ? src.Start.DateTime.Value : DateTime.MinValue))
            .ForMember(dest => dest.EndDateTime, opt => opt.MapFrom(src => src.End.DateTime.HasValue ? src.End.DateTime.Value : DateTime.MinValue));
+
+            CreateMap<User, ViewProfileData>();
         }
     }
 }

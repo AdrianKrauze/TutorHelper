@@ -87,5 +87,13 @@ namespace TutorHelper.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("devinfo")]
+        public IActionResult ReturnDevInfo()
+        {
+            return Ok(_testService.ReturnDevData());
+        }
     }
 }

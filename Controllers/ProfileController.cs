@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TutorHelper.Models.DtoModels.Profile;
+using TutorHelper.Models.DtoModels.ToView;
 using TutorHelper.Services;
 
 namespace TutorHelper.Controllers
@@ -40,5 +41,14 @@ namespace TutorHelper.Controllers
             var result = await _profileService.GetUserSubTaughtByUserIdAsync();
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("profile")]
+        public async Task<ActionResult<ViewProfileData>> GetProfileData()
+        {
+            var result = await  _profileService.GetProfileDataAsync();
+            return Ok(result);
+        }
+        
     }
 }

@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TutorHelper.EmailStrategy;
 using TutorHelper.Entities;
 using TutorHelper.Entities.DbContext;
 using TutorHelper.Middlewares;
@@ -42,6 +43,10 @@ builder.Services.AddDefaultIdentity<User>(options =>
     options.Password.RequiredUniqueChars = 1;
 })
 .AddEntityFrameworkStores<TutorHelperDb>();
+
+var developerInfo = new DeveloperInfo();
+builder.Configuration.GetSection("DeveloperInfo").Bind(developerInfo);
+builder.Services.AddSingleton(developerInfo);
 
 var authenticationSettings = new AuthenticationSettings();
 builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
@@ -115,6 +120,8 @@ builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IGoogleCalendarApi, GoogleCalendarApi>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddTransient<EmailStrategyFactory>();
+builder.Services.AddTransient<IEmailService, EmailService>(); 
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ISummaryServices, SummaryServices>();
 builder.Services.AddScoped<IDataGenerator, DataGenerator>();
