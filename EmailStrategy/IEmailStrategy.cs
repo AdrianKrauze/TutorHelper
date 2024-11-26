@@ -4,7 +4,10 @@ namespace TutorHelper.EmailStrategy
 {
     public interface IEmailStrategy
     {
-        string MakeBodyContent(CreateEmailDto dto); // Generowanie treści e-maila
+        string MakeBodyContent(CreateEmailDto dto); 
+        string ReturnEmailSubject(CreateEmailDto dto);
+
+        
         
     }
 }

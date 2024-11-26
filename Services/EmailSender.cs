@@ -31,7 +31,7 @@ public class EmailSender : IEmailSender
         using (var smtpClient = new SmtpClient(_smtpSettings.Server, _smtpSettings.Port))
         {
             smtpClient.Credentials = new NetworkCredential(_smtpSettings.User, _smtpSettings.Password);
-            smtpClient.EnableSsl = true; // Użyj SSL, jeśli jest wymagane przez serwer SMTP
+            smtpClient.EnableSsl = true;
             await smtpClient.SendMailAsync(mailMessage);
         }
     }

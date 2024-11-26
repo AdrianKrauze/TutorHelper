@@ -90,7 +90,7 @@ namespace TutorHelper.Services
             var studentDto = _mapper.Map<ViewStudentDto>(student);
 
           
-            studentDto.CountOflessons = student.Lessons.Count;
+            studentDto.CountOflessons = student.Lessons?.Count ?? 0;
 
             return studentDto;
         }
@@ -216,84 +216,73 @@ namespace TutorHelper.Services
             if (!string.IsNullOrEmpty(dto.FirstName))
             {
                 student.FirstName = dto.FirstName;
-                _tutorHelperDb.Entry(student).Property(s => s.FirstName).IsModified = true;
+                
             }
 
             if (!string.IsNullOrEmpty(dto.LastName))
             {
                 student.LastName = dto.LastName;
-                _tutorHelperDb.Entry(student).Property(s => s.LastName).IsModified = true;
+               
             }
 
             if (!string.IsNullOrEmpty(dto.PhoneNumber))
             {
                 student.PhoneNumber = dto.PhoneNumber;
-                _tutorHelperDb.Entry(student).Property(s => s.PhoneNumber).IsModified = true;
+                
             }
 
 
             if (dto.PricePerHour.HasValue)
             {
                 student.PricePerHour = (float)dto.PricePerHour;
-                _tutorHelperDb.Entry(student).Property(s => s.PricePerHour).IsModified = true;
+                
             }
 
             if (!string.IsNullOrEmpty(dto.ContactTips))
             {
                 student.ContactTips = dto.ContactTips;
-                _tutorHelperDb.Entry(student).Property(s => s.ContactTips).IsModified = true;
+                
             }
 
             if (!string.IsNullOrEmpty(dto.EduStageId))
             {
                 student.EduStageId = dto.EduStageId;
-                _tutorHelperDb.Entry(student).Property(s => s.EduStageId).IsModified = true;
+               
             }
 
             if (!string.IsNullOrEmpty(dto.SubjectId))
             {
                 student.SubjectId = dto.SubjectId;
-                _tutorHelperDb.Entry(student).Property(s => s.SubjectId).IsModified = true;
+               
             }
 
             if (!string.IsNullOrEmpty(dto.LessonPlaceId))
             {
                 student.LessonPlaceId = dto.LessonPlaceId;
-                _tutorHelperDb.Entry(student).Property(s => s.LessonPlaceId).IsModified = true;
-            }
-
-            if (!string.IsNullOrEmpty(dto.FirstName) || !string.IsNullOrEmpty(dto.LastName) || !string.IsNullOrEmpty(dto.PhoneNumber))
-            {
-                await LtDB.LinqExtensions.UpdateAsync(
-                    _tutorHelperDb.Lessons
-                        .OfType<LessonWithStudent>()
-                        .Where(l => l.StudentId == id), 
-                    x => new LessonWithStudent
-                    {
-                        StudentFirstName = !string.IsNullOrEmpty(dto.FirstName) ? dto.FirstName : x.StudentFirstName,
-                        StudentLastName = !string.IsNullOrEmpty(dto.LastName) ? dto.LastName : x.StudentLastName,
-                        PhoneNumber = !string.IsNullOrEmpty(dto.PhoneNumber) ? dto.PhoneNumber : x.PhoneNumber
-                    }
-                );
-            }
-
-            if (dto.PricePerHour > 0 || !string.IsNullOrEmpty(dto.ContactTips) || !string.IsNullOrEmpty(dto.EduStageId) || !string.IsNullOrEmpty(dto.SubjectId) || !string.IsNullOrEmpty(dto.LessonPlaceId))
-            {
-                await LtDB.LinqExtensions.UpdateAsync(
-                    _tutorHelperDb.Lessons
-                        .OfType<LessonWithStudent>()
-                        .Where(l => l.StudentId == id),
-                    x => new LessonWithStudent
-                    {
-                        ContactTips = !string.IsNullOrEmpty(dto.ContactTips) ? dto.ContactTips : x.ContactTips,
-                        EduStageId = !string.IsNullOrEmpty(dto.EduStageId) ? dto.EduStageId : x.EduStageId,
-                        SubjectId = !string.IsNullOrEmpty(dto.SubjectId) ? dto.SubjectId : x.SubjectId,
-                        LessonPlaceId = !string.IsNullOrEmpty(dto.LessonPlaceId) ? dto.LessonPlaceId : x.LessonPlaceId
-                    }
-                );
+                
             }
 
            
+
+           
+                foreach(var lesson in allLessonForStudent)
+                {
+                    if (!string.IsNullOrEmpty(dto.FirstName)) lesson.StudentFirstName = dto.FirstName;
+                    if (!string.IsNullOrEmpty(dto.LastName)) lesson.StudentLastName = dto.LastName;
+                    if (!string.IsNullOrEmpty(dto.PhoneNumber)) lesson.PhoneNumber = dto.PhoneNumber;
+                }
+            
+
+            foreach (var lesson in futureLessonForStudent)
+            {
+                // Zastosowanie zmian tylko wtedy, gdy wartości są dostępne w DTO
+                lesson.ContactTips = !string.IsNullOrEmpty(dto.ContactTips) ? dto.ContactTips : lesson.ContactTips;
+                lesson.EduStageId = !string.IsNullOrEmpty(dto.EduStageId) ? dto.EduStageId : lesson.EduStageId;
+                lesson.SubjectId = !string.IsNullOrEmpty(dto.SubjectId) ? dto.SubjectId : lesson.SubjectId;
+                lesson.LessonPlaceId = !string.IsNullOrEmpty(dto.LessonPlaceId) ? dto.LessonPlaceId : lesson.LessonPlaceId;
+            }
+
+
 
             _tutorHelperDb.Lessons.UpdateRange(allLessonForStudent);
             _tutorHelperDb.Lessons.UpdateRange(futureLessonForStudent);

@@ -29,12 +29,15 @@ namespace TutorHelper.Services
         public async Task SendEmailAsync(CreateEmailDto dto)
         {
             var strategy = _emailStrategyFactory.GetStrategy(dto.EmailCase);
+           
 
-            var subject = _emailStrategyFactory.GetSubject(dto.EmailCase);
+            var subject = strategy.ReturnEmailSubject(dto);
 
             var body = strategy.MakeBodyContent(dto);
 
             await _emailSender.SendEmailAsync(_developerInfo.Email, subject, body);
+
+            await _emailSender.SendEmailAsync(dto.Email, "Dziękuje za kontakt. TutoHelper", EmailTemplateHelper.GenerateHtmlTemplateResponse(dto));
 
             
         }

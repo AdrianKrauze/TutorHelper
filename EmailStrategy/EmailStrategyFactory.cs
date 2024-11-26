@@ -1,4 +1,5 @@
-﻿namespace TutorHelper.EmailStrategy
+﻿using TutorHelper.EmailStrategy.Strategies;
+namespace TutorHelper.EmailStrategy
 {
     public class EmailStrategyFactory
     {
@@ -25,21 +26,9 @@
                 return strategy;
             }
 
-            throw new ArgumentException("Nieobsługiwany przypadek e-maila.");
+            return new OtherStrategy(); 
         }
 
-        public string GetSubject(EmailCase emailCase)
-        {
-            return emailCase switch
-            {
-                EmailCase.Other => "Temat: Inne zapytanie",
-                EmailCase.PageError => "Temat: Problem z stroną",
-                EmailCase.ProblemWithLessons => "Temat: Problem z lekcjami",
-                EmailCase.ProblemWithPayments => "Temat: Problem z płatnościami",
-                EmailCase.ProblemWithStudents => "Temat: Problem z uczniami",
-                EmailCase.Subscribe => "Temat: Subskrypcja",
-                _ => "Temat: Inne"
-            };
-        }
+
     }
 }

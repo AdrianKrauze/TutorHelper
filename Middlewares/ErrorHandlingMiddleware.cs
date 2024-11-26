@@ -13,11 +13,11 @@ namespace TutorHelper.Middlewares
             {
                 await next.Invoke(context);
             }
-            catch (BadRequestException badRequestException)
+     /*      catch (BadRequestException badRequestException)
             {
               
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, $"{badRequestException.Message} (Middleware)" );
-            }
+            } */
             catch (NotFoundException notFoundException)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status404NotFound, $"{notFoundException.Message} (Middleware)");

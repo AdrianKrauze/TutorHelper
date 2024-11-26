@@ -14,7 +14,7 @@ namespace TutorHelper.Controllers.MainPagesController
         }
 
         [HttpPost("contact/send-email")]
-        public async Task<IActionResult> SendEmail(CreateEmailDto dto)
+        public async Task<IActionResult> SendEmail([FromBody]CreateEmailDto dto)
         {
 
 
