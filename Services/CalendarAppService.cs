@@ -18,6 +18,7 @@ namespace TutorHelper.Services
         Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day);
 
         Task<List<PlaceholderLesson>> GetPlaceholderData();
+        Task<List<LessonObjectDto>> GetLessonListInMonth(int year, int month, int day);
         Task<LessonObjectDto> GetOneLessonData(string lessonid);
     }
 
@@ -103,6 +104,29 @@ namespace TutorHelper.Services
             }
 
             return placeholderLessons;
+        }
+        public async Task<List<LessonObjectDto>> GetLessonListInMonth(int year, int month, int day)
+        {
+            // Walidacja przekazanych danych (sprawdzamy, czy data jest prawidłowa)
+            ValidateData(year, month, day);
+
+            string userId = _userContextService.GetAuthenticatedUserId;
+
+            // Pobieramy lekcje dla całego miesiąca, ignorując dzień
+            var lessonsInMonth = await _tutorHelperDb.Lessons
+                .Where(l => l.CreatedById == userId && l.Date.Year == year && l.Date.Month == month)
+                .Include(x => x.EduStage)
+                .Include(x => x.LessonPlace)
+                .Include(x => x.Subject)
+                .Include(x => x.StudentCondition)
+                .OrderBy(x => x.HasStudent)
+                .ThenBy(x => x.Date)
+                .ToListAsync();
+
+            // Mapowanie na DTO
+            var mappedList = _mapper.Map<List<LessonObjectDto>>(lessonsInMonth);
+
+            return mappedList;
         }
 
 

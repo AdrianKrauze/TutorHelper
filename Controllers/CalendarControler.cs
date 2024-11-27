@@ -50,6 +50,14 @@ namespace TutorHelper.Controllers
 
             return Ok(lessons);
         }
+        [HttpGet]
+        [Route("monthly/{year}/{month}/{day}")]
+        public async Task<IActionResult> GetLessonInMonth([FromRoute] int year, [FromRoute] int month, [FromRoute] int day)
+        {
+            var lessons = await _calendarService.GetLessonListInMonth(year, month, day);
+
+            return Ok(lessons);
+        }
 
         [HttpGet]
         [Route("lessonplaceholders")]
