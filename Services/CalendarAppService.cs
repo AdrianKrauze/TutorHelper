@@ -8,16 +8,17 @@ using TutorHelper.Models.DtoModels.ToView;
 using TutorHelper.Entities.DbContext;
 using TutorHelper.Models.DtoModels;
 using System.Linq;
+
 namespace TutorHelper.Services
 {
     public interface ICalendarAppService
     {
-        
         Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day);
+
         Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day);
+
         Task<List<PlaceholderLesson>> GetPlaceholderData();
-
-
+        Task<LessonObjectDto> GetOneLessonData(string lessonid);
     }
 
     public class CalendarAppService : ICalendarAppService
@@ -33,6 +34,16 @@ namespace TutorHelper.Services
             _mapper = mapper;
         }
 
+
+        public async Task<LessonObjectDto> GetOneLessonData(string lessonid)
+        {
+            string userId =  _userContextService.GetAuthenticatedUserId;
+            var lesson = await _tutorHelperDb.Lessons.FindAsync(lessonid);
+            DataValidationMethod.OwnershipAndNullChecker(lesson, userId);
+
+            var result = _mapper.Map<LessonObjectDto>(lesson);
+            return result;
+        }
 
         public async Task<List<PlaceholderLesson>> GetPlaceholderData()
         {
@@ -56,16 +67,13 @@ namespace TutorHelper.Services
 
             foreach (var student in listOfStudents)
             {
-              
                 bool hasLessonThisWeek = await BoolStudentLessonInThisWeek(startOfWeek, endOfWeek, student.Id);
 
                 if (!hasLessonThisWeek)
                 {
-                   
                     DateTime startDateTime = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime);
                     DateTime endDateTime = startDateTime.AddMinutes((int)student.PlaceholderCourseData.Duration);
 
-                    
                     placeholderLessons.Add(new PlaceholderLesson
                     {
                         studentId = student.Id,
@@ -76,16 +84,13 @@ namespace TutorHelper.Services
                     });
                 }
 
-             
                 bool hasLessonNextWeek = await BoolStudentLessonInThisWeek(startOfWeek.AddDays(7), endOfWeek.AddDays(7), student.Id);
 
                 if (!hasLessonNextWeek)
                 {
-                  
                     DateTime startDateTimeNextWeek = CalculateStartDate(student.PlaceholderCourseData.DayOfLesson, student.PlaceholderCourseData.LessonTime).AddDays(7);
                     DateTime endDateTimeNextWeek = startDateTimeNextWeek.AddMinutes((int)student.PlaceholderCourseData.Duration);
 
-                 
                     placeholderLessons.Add(new PlaceholderLesson
                     {
                         studentId = student.Id,
@@ -100,15 +105,8 @@ namespace TutorHelper.Services
             return placeholderLessons;
         }
 
-
-
-
-
-
-
         public async Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day)
         {
-           
             if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
             {
                 throw new BadRequestException("The provided date parameters are not valid.");
@@ -126,10 +124,8 @@ namespace TutorHelper.Services
                 .Include(x => x.StudentCondition)
                 .ToListAsync();
 
-
             var sortedLessons = lessonsListInDay.OrderBy(x => x.HasStudent).ThenBy(x => x.Date).ToList();
 
-           
             var mappedList = _mapper.Map<List<LessonObjectDto>>(sortedLessons);
 
             return mappedList;
@@ -137,7 +133,6 @@ namespace TutorHelper.Services
 
         public async Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day)
         {
-            
             if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
             {
                 throw new BadRequestException("The provided date parameters are not valid.");
@@ -166,23 +161,12 @@ namespace TutorHelper.Services
 
             return listToReturn;
         }
-
-
-        
+        #region private
         private DateTime ReturnMonday()
         {
             DateTime today = DateTime.Today;
 
             DateTime startOfThisWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
-
-            return startOfThisWeek;
-
-        }
-        private DateTime ReturnNextMonday(DateTime dateTime)
-        {
-            DateTime today = DateTime.Today;
-
-            DateTime startOfThisWeek = ReturnMonday().AddDays(7);
 
             return startOfThisWeek;
         }
@@ -194,24 +178,18 @@ namespace TutorHelper.Services
                             .AnyAsync(lesson => lesson.StudentId == studentId
                                              && lesson.Date >= start
                                              && lesson.Date <= end);
-
-
         }
 
         private DateTime CalculateStartDate(DayOfWeek day, TimeOnly timeSpan)
         {
-
             DateTime startOfWeek = ReturnMonday();
 
-
-
             DateTime lessonDate = startOfWeek.AddDays((double)day);
-
 
             DateTime startDateTime = lessonDate.Add(timeSpan.ToTimeSpan());
 
             return startDateTime;
         }
-
+        #endregion
     }
 }

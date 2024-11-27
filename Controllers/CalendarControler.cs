@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TutorHelper.Models.DtoModels.ToView;
 using TutorHelper.Models.GoogleCalendarModels;
 using TutorHelper.Services;
 
@@ -57,5 +58,13 @@ namespace TutorHelper.Controllers
             var result = await _calendarService.GetPlaceholderData();
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("{lessonId}")]
+        public async Task<LessonObjectDto> GetOneLessonData([FromRoute]string lessonId)
+        {
+            return await _calendarService.GetOneLessonData(lessonId);
+        }
+
     }
 }
