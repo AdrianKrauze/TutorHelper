@@ -67,7 +67,7 @@ public class GoogleAuthService : IGoogleAuthService
             UserName = email,
             Email = email,
             FirstName = loginInfo.Principal?.FindFirstValue(ClaimTypes.GivenName),
-            LastName = loginInfo.Principal?.FindFirstValue(ClaimTypes.Surname),
+            LastName = string.IsNullOrEmpty(loginInfo.Principal?.FindFirstValue(ClaimTypes.Surname)) ? "" : loginInfo.Principal?.FindFirstValue(ClaimTypes.Surname),
             EmailConfirmed = true
         };
 
