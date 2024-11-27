@@ -60,9 +60,10 @@ namespace TutorHelper.Controllers
             }
 
             var token = await _accountService.GenerateJwtTokenAsync(user);
-            return Ok(token);
+            return Ok(new{token});
+
         }
-        
+
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
