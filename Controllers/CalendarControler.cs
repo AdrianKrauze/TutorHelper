@@ -34,7 +34,7 @@ namespace TutorHelper.Controllers
         }
 
         [HttpGet]
-        [Route("month/{year}/{month}/{day}")]
+        [Route("day/{year}/{month}/{day}")]
         public async Task<IActionResult> GetLessonInDay([FromRoute] int year, [FromRoute] int month, [FromRoute] int day)
         {
             var result = await _calendarService.GetLessonListInDay(year, month, day);

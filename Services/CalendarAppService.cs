@@ -105,38 +105,10 @@ namespace TutorHelper.Services
             return placeholderLessons;
         }
 
-        public async Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day)
-        {
-            if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
-            {
-                throw new BadRequestException("The provided date parameters are not valid.");
-            }
-
-            string userId = _userContextService.GetAuthenticatedUserId;
-
-            var date = new DateTime(year, month, day, 0, 0, 0);
-
-            var lessonsListInDay = await _tutorHelperDb.Lessons
-                .Where(l => l.CreatedById == userId && l.Date.Year == year && l.Date.Month == month && l.Date.Day == day)
-                .Include(x => x.EduStage)
-                .Include(x => x.LessonPlace)
-                .Include(x => x.Subject)
-                .Include(x => x.StudentCondition)
-                .ToListAsync();
-
-            var sortedLessons = lessonsListInDay.OrderBy(x => x.HasStudent).ThenBy(x => x.Date).ToList();
-
-            var mappedList = _mapper.Map<List<LessonObjectDto>>(sortedLessons);
-
-            return mappedList;
-        }
 
         public async Task<List<LessonObjectDto>> GetLessonListInWeek(int year, int month, int day)
         {
-            if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
-            {
-                throw new BadRequestException("The provided date parameters are not valid.");
-            }
+            ValidateData(year, month, day);
 
             string userId = _userContextService.GetAuthenticatedUserId;
 
@@ -156,6 +128,25 @@ namespace TutorHelper.Services
                 .Include(x => x.StudentCondition)
                 .OrderBy(x => x.Date)
                 .ToListAsync();
+
+            var listToReturn = _mapper.Map<List<LessonObjectDto>>(lessons);
+
+            return listToReturn;
+        }
+
+        public async Task<List<LessonObjectDto>> GetLessonListInDay(int year, int month, int day)
+        {
+            ValidateData(year, month, day);
+            string userId = _userContextService.GetAuthenticatedUserId;
+
+            var lessons = await _tutorHelperDb.Lessons
+            .Where(x => x.Date.Year == year && x.Date.Month == month && x.Date.Day == day && x.CreatedById == userId)
+                .Include(x => x.EduStage)
+     .Include(x => x.LessonPlace)
+     .Include(x => x.Subject)
+     .Include(x => x.StudentCondition)
+     .OrderBy(x => x.Date)
+     .ToListAsync();
 
             var listToReturn = _mapper.Map<List<LessonObjectDto>>(lessons);
 
@@ -189,6 +180,15 @@ namespace TutorHelper.Services
             DateTime startDateTime = lessonDate.Add(timeSpan.ToTimeSpan());
 
             return startDateTime;
+        }
+
+        private void ValidateData(int year, int month,  int day)
+        {
+            if (year < 1 || month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
+            {
+                throw new BadRequestException("The provided date parameters are not valid.");
+            }
+           
         }
         #endregion
     }

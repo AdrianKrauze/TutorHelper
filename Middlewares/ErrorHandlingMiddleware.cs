@@ -28,7 +28,7 @@ namespace TutorHelper.Middlewares
             }
             catch (ArgumentNullException argumentNullException)
             {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, $"{argumentNullException.Message} (Middleware)");
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, $"{argumentNullException.Message} {argumentNullException.StackTrace} (Middleware)");
             }
             catch (Google.GoogleApiException googleApiException)
             {
